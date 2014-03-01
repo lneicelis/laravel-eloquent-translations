@@ -69,12 +69,10 @@ class EloquentLoader implements LoaderInterface{
      */
     protected function loadGroup($locale, $group)
     {
-
         $translations = Translation::getGroup($locale, $group);
 
         if ($translations->exists()) {
             $array = $translations->get(array('key', 'value'))->toArray();
-
             return $this->fetchArray($array);
         }
 
@@ -101,10 +99,20 @@ class EloquentLoader implements LoaderInterface{
     {
         $assoc = array();
         foreach ($array as $item) {
-            $assoc[$item['key']] = $item['value'];
+            if (preg_match('/\./', $item['key'])) {
+                list($key, $subKey) = explode('.', $item['key']);
+                if(!isset($assoc[$key])) $assoc[$key] = array();
+                $assoc[$key][$subKey] = $item['value'];
+            } else {
+                $assoc[$item['key']] = $item['value'];
+            }
         }
 
         return $assoc;
     }
 
+    public function getHints()
+    {
+        return $this->hints;
+    }
 } 

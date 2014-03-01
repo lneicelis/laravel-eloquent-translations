@@ -36,6 +36,12 @@ class TranslationsServiceProvider extends ServiceProvider {
 
             return $trans;
         });
+
+        $this->app['command.translations.load'] = $this->app->share(function($app)
+        {
+            return new LoaderCommand();
+        });
+        $this->commands('command.translations.load');
     }
 
     /**

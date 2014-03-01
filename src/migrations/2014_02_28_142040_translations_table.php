@@ -22,6 +22,8 @@ class TranslationsTable extends Migration {
             $table->text('value')->nullable();
 
             $table->timestamps();
+
+            $table->unique(array('locale', 'namespace', 'group', 'key'));
         });
     }
 

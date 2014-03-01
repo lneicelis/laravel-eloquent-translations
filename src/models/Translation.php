@@ -13,9 +13,11 @@ class Translation extends Eloquent {
 	 */
 	protected $table = 'translations';
 
+    protected $fillable = array('locale', 'namespace', 'group', 'key', 'value');
+
     public function scopeGetGroup($query, $locale, $group)
     {
-        return $query->whereNull('namespace')->where('locale', '=', $locale)->where('group', '=', $group);
+        return $query->where('namespace', '=', '*')->where('locale', '=', $locale)->where('group', '=', $group);
     }
 
     public function scopeGetNamespaced($query, $locale, $namespace, $group)
