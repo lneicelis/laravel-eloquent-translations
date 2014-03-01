@@ -4,6 +4,7 @@ namespace Luknei\Translations;
 
 use Illuminate\Translation\LoaderInterface;
 use Cache;
+use Config;
 
 class EloquentLoader implements LoaderInterface{
 
@@ -29,6 +30,11 @@ class EloquentLoader implements LoaderInterface{
      * @var
      */
     protected $useCache = true;
+
+    public function __construct()
+    {
+        $this->useCache(!Config::get('app.debug'));
+    }
 
     /**
      * @param string $locale
