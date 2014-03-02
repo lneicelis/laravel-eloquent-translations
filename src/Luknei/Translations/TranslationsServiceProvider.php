@@ -42,6 +42,16 @@ class TranslationsServiceProvider extends ServiceProvider {
             return new LoaderCommand();
         });
         $this->commands('command.translations.load');
+
+    }
+
+    public function boot()
+    {
+        $this->package('luknei/translations', 'trans');
+
+        include __DIR__.'/../../routes.php';
+
+        include __DIR__.'/../../menu.php';
     }
 
     /**

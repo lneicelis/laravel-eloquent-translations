@@ -5,8 +5,9 @@ namespace Luknei\Translations;
 use Eloquent;
 use Cache;
 use Luknei\Translations\EloquentLoader;
+use LaravelBook\Ardent\Ardent;
 
-class Translation extends Eloquent {
+class Translation extends Ardent {
 
 	/**
 	 * The database table used by the model.
@@ -19,6 +20,13 @@ class Translation extends Eloquent {
      * @var array
      */
     protected $fillable = array('locale', 'namespace', 'group', 'key', 'value');
+
+    public static $rules = array(
+        'locale' => 'required',
+        'namespace' => 'required',
+        'group' => 'required',
+        'key' => 'required',
+    );
 
     /**
      * @param $query
@@ -42,6 +50,14 @@ class Translation extends Eloquent {
     {
         return $query->where('locale', '=', $locale)
             ->where('namespace', '=', $namespace)->where('group', '=', $group);
+    }
+
+    public function scopeFindByKey($query, $locale, $namespace, $group, $key)
+    {
+        return $query->where('locale', '=', $locale)
+            ->where('namespace', '=', $namespace)
+            ->where('group', '=', $group)
+            ->where('key', '=', $key);
     }
 
     /**
