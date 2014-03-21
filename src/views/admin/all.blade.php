@@ -2,14 +2,19 @@
 
 @section('head-css')
 
-
     @parent
-@endsection
+@stop
+
+@section('head-js')
+    @parent
+
+    {{ HTML::script('https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js') }}
+@stop
 
 @section('page-header')
     <div class="page-header">
         <h1>
-            Translations
+            {{ trans('trans::base.translations') }}
             <small>
                 <i class="icon-double-angle-right"></i>
 
@@ -22,7 +27,7 @@
 @section('content')
 
     <p>
-        <a class="btn btn-primary show-trans-form" href="{{ URL::Action('TranslationsController@postAdd') }}">
+        <a class="btn btn-primary form-new" href="{{ URL::Action('TranslationsController@postAdd') }}">
             <i class="icon-plus align-top bigger-125"></i>
             {{ trans('base.create') }}
         </a>
@@ -52,11 +57,11 @@
                         <td>@{{ trans.value }}</td>
                         <td>
                             <div class="hidden-phone visible-desktop action-buttons">
-                                <a class="blue trans-new-from-old" href="{{ URL::action('TranslationsController@postEdit') }}" data-id="@{{ trans.id }}" >
+                                <a class="blue form-new-from-old" href="{{ URL::action('TranslationsController@postEdit') }}" data-id="@{{ trans.id }}" >
                                     <i class="icon-plus bigger-130"></i>
                                 </a>
 
-                                <a class="green trans-edit" href="{{ URL::action('TranslationsController@postEdit') }}" data-id="@{{ trans.id }}" >
+                                <a class="green form-edit" href="{{ URL::action('TranslationsController@postEdit') }}" data-id="@{{ trans.id }}" >
                                     <i class="icon-pencil bigger-130"></i>
                                 </a>
 
@@ -72,101 +77,34 @@
     </div>
 
     @include('trans::admin.modals.trans-form')
-@stop
 
-@section('head-js')
-    @parent
-
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
 @stop
 
 @section('scripts')
-    <script src="{{ URL::asset('assets/js/jquery-ui-1.10.3.full.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/js/admin/ajax-form.js') }}"></script>
-    <script src="{{ URL::asset('assets/js/admin/jsonToForm-widget.js') }}"></script>
+    {{ HTML::script('assets/js/jquery-ui-1.10.3.full.min.js') }}
+    {{ HTML::script('assets/js/admin/ajax-form.js') }}
+    {{ HTML::script('assets/js/admin/jsonToForm-widget.js') }}
+    {{ HTML::script('packages/luknei/translations/js/angular/modules/translationsApp.js') }}
+
 
     <script>
+//        var app = angular.module("translationsApp", []);
         (function(angular){
-            var app = angular.module("translationsApp", []);
-
             app.controller("TranslationsController", function($scope, $http) {
-                $http.post('{{ URL::action("TranslationsController@postAll") }}').success(function(data){
+                $http.post(
+                        '{{ URL::action("TranslationsController@postAll") }}',
+                        {namespace:"{{ $namespace }}"}
+                    ).success(function(data){
                     $scope.translations = data;
                 });
             });
         })(angular);
 
-        (function($){
-            var createBtn = ".show-trans-form";
-            var editBtn = ".trans-edit";
-            var createFromOld = ".trans-new-from-old";
-            var form = $("#trans-form");
-            var modal = $("#trans-form-modal");
-            var findOneUrl = '{{ URL::action("TranslationsController@postFind") }}';
+        var form = $("#trans-form");
+        var modal = $("#trans-form-modal");
+        var findOneUrl = '{{ URL::action("TranslationsController@postFind") }}';
 
-            $(document).on("click", createBtn, function(e) {
-                e.preventDefault();
-                var formAction = $(e.currentTarget).attr("href");
-                form.attr("action", formAction);
-
-                bindAjaxForm();
-
-                modal.modal("show");
-            });
-
-            $(document).on("click", editBtn, function(e) {
-                e.preventDefault();
-                var formAction = $(e.currentTarget).attr("href");
-                var findOneId = $(this).data("id");
-                $(".loader-container").show();
-
-                fillForm(form, formAction, findOneUrl, findOneId);
-
-                bindAjaxForm();
-
-            });
-
-            $(document).on("click", createFromOld, function(e) {
-                e.preventDefault();
-                var formAction = $(e.currentTarget).attr("href");
-                var findOneId = $(this).data("id");
-                $(".loader-container").show();
-
-                fillForm(form, formAction, findOneUrl, findOneId);
-
-                $(createBtn).trigger("click");
-            });
-
-            function fillForm(form, formAction, findUrl, findOneId)
-            {
-                form.attr("action", formAction)
-                    .jsonToForm({
-                        url: findUrl,
-                        data: {
-                            id: findOneId
-                    },
-                        onSuccessCallback: function(){
-                            modal.modal("show");
-                            $(".loader-container").hide();
-                        }
-                    });
-            }
-
-            function bindAjaxForm(){
-                form.ajaxForm({
-                    beforeSendCallback: function(){
-                        $(".loader-container").show();
-                    },
-                    onSuccessCallback: function(){
-                        $(".loader-container").hide();
-                        modal.modal("hide");
-                        location.reload();
-                    },
-                    onErrorCallback: function(response){
-                        $(".loader-container").hide();
-                    }
-                });
-            }
-        })(jQuery);
     </script>
+
+    {{ HTML::script('assets/js/admin/form-actions.js') }}
 @stop

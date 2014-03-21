@@ -4,17 +4,21 @@ use Luknei\Translations\Translation;
 
 class TranslationsController extends \BaseController {
 
-    public function getAll()
+    public function getAll($namespace = "all")
     {
         /* Breadcrumb */
-        Item::setMenu('crumb')->setTitle('Translations')->setUrl(URL::current())->addItem();
+        Item::setMenu('crumb')->setTitle(trans('trans::base.translations'))->setUrl(URL::current())->addItem();
 
-        return View::make('trans::admin.all');
+        return View::make('trans::admin.all', array('namespace' => $namespace));
     }
 
     public function postAll()
     {
-        $translations = Translation::all();
+        if ( Input::has('namespace') && Input::get('namespace') !== "all") {
+            $translations = Translation::where('namespace', Input::get('namespace'))->get();
+        } else {
+            $translations = Translation::all();
+        }
 
         return Response::json($translations, 200);
     }
@@ -24,7 +28,7 @@ class TranslationsController extends \BaseController {
         $trans = new Translation();
         $trans->fill(Input::except('_token'));
         if ($trans->save()) {
-            $response = array('type' => 'success', 'title' => 'Success', 'message' => 'Page was successfully created');
+            $response = array('type' => 'success', 'title' => trans('base.success'), 'message' => trans('trans::base.addSuccess'));
 
             return Response::json($response, 200);
         } else {
@@ -34,10 +38,10 @@ class TranslationsController extends \BaseController {
 
     public function postEdit()
     {
-        $trans = Translation::find(Input::get('id'));
+        $trans = Translation::findOrFail(Input::get('id'));
         $trans->fill(Input::except('id', '_token'));
         if ($trans->save()) {
-            $response = array('type' => 'success', 'title' => 'Success', 'message' => 'Page was successfully created');
+            $response = array('type' => 'success', 'title' => trans('base.success'), 'message' => trans('trans::base.editSuccess'));
 
             return Response::json($response, 200);
         } else {
@@ -47,25 +51,21 @@ class TranslationsController extends \BaseController {
 
     public function postFind()
     {
-        if (Input::has('id')) {
-            $response = Translation::find(Input::get('id'));
+        $response = Translation::findOrFail(Input::get('id'));
 
-            return Response::json($response, 200);
-        }
+        return Response::json($response, 200);
     }
 
     public function postDelete()
     {
-        if (Input::has('id')) {
-            Translation::find(Input::get('id'))->delete();
-            $response = array(
-                'type' => 'success',
-                'title' => 'Success',
-                'message' => 'Translations successfully deleted.'
-            );
+        Translation::findOrFail(Input::get('id'))->delete();
+        $response = array(
+            'type' => 'success',
+            'title' => trans('base.success'),
+            'message' => trans('trans::base.deleteSuccess')
+        );
 
-            return Response::json($response, 200);
-        }
+        return Response::json($response, 200);
     }
 
 } 

@@ -2,10 +2,10 @@
 Route::group(
     array(
         'before' => 'admin',
-        'prefix' => 'admin/translations/'
+        'prefix' => 'admin/translations/',
     ),
     function(){
-        Route::get('all', array(
+        Route::get('{namespace?}', array(
             'uses' => 'TranslationsController@getAll'
         ));
 

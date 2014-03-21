@@ -21,6 +21,27 @@ class TranslationsServiceProvider extends ServiceProvider {
     {
         $this->registerLoader();
 
+        $this->registerTranslator();
+
+        $this->app['command.translations.load'] = $this->app->share(function($app)
+        {
+            return new LoaderCommand();
+        });
+
+        $this->commands('command.translations.load');
+
+        include_once __DIR__.'/../../routes.php';
+    }
+
+    public function boot()
+    {
+        $this->package('luknei/translations', 'trans');
+
+        include_once __DIR__.'/../../menu.php';
+    }
+
+    protected function registerTranslator()
+    {
         $this->app->bindShared('translator', function($app)
         {
             $loader = $app['translation.loader'];
@@ -36,22 +57,6 @@ class TranslationsServiceProvider extends ServiceProvider {
 
             return $trans;
         });
-
-        $this->app['command.translations.load'] = $this->app->share(function($app)
-        {
-            return new LoaderCommand();
-        });
-        $this->commands('command.translations.load');
-
-    }
-
-    public function boot()
-    {
-        $this->package('luknei/translations', 'trans');
-
-        include __DIR__.'/../../routes.php';
-
-        include __DIR__.'/../../menu.php';
     }
 
     /**

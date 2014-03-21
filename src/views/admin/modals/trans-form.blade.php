@@ -60,12 +60,12 @@
                 <div class="modal-footer">
                     <button class="btn btn-sm" data-dismiss="modal">
                         <i class="icon-remove"></i>
-                        {{ trans('base.save') }}
+                        {{ trans('base.cancel') }}
                     </button>
 
                     <button class="btn btn-sm btn-primary">
                         <i class="icon-ok"></i>
-                        {{ trans('base.cancel') }}
+                        {{ trans('base.save') }}
                     </button>
                 </div>
 
